@@ -1,0 +1,11 @@
+emp_id,first_name,last_name,middle_name,job_title,direct_supervisor
+1,John,Doe,M,Manager,Jane Smith
+2,Alice,Johnson,,Assistant,John Doe
+3,Mark,Williams,R,Analyst,John Doe
+4,Sarah,Brown,,Technician,John Doe
+5,David,Taylor,J,Engineer,Jane Smith
+6,Emily,Davis,,Designer,John Doe
+7,Michael,Anderson,A,Developer,John Doe
+8,Olivia,Wilson,,Salesperson,Jane Smith
+9,Ethan,Thompson,B,Accountant,Jane Smith
+10,Sophia,Martinez,,Administrator,John Doe
