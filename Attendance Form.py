@@ -7,6 +7,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font
+from tkinter import messagebox
 import datetime
 import csv
 from datetime import date
@@ -18,16 +19,25 @@ record_no = 0
 
 def openAddEmployee():
     def addemp():
+        newrow = []
         fname = ent_addemp.get()
         lname = ent_lname.get()
         mname = ent_mname.get()
         job = ent_job.get()
         super = ent_super.get()
-        emp_id = f'{fname[:2].upper()}{lname[:2].upper()}{str(random.randint(100,999))}'
-        tbl_emp.insert("","end",values=(emp_id,fname,lname,mname,job,super))
 
-        with open('employee.csv', 'a') as file:
-            file.write(f'\n{emp_id},{fname},{lname},{mname},{job},{super}')
+        if (newrow =="") | (fname == "") | (lname =="") | (mname == "") | (job == "") | (super == ""):
+            messagebox.showerror("Empty fields","One of the required fields is empty.")
+            return
+
+        emp_id = f'{fname[:2].upper()}{lname[:2].upper()}{str(random.randint(100,999))}'
+        newrow = [emp_id,fname,lname,mname,job,super]
+        tbl_emp.insert("","end",values=newrow)
+
+        with open('employee.csv', 'a',newline='') as file:
+            writer = csv.writer(file)
+            
+            writer.writerow(newrow)
 
         ## clearing of values
         ent_addemp.delete(0,tk.END)
@@ -134,92 +144,139 @@ def updateEmployee():
     ### ------------------------------------------ MODULE: UPDATING AND DELETING RECORDS -- Functions
     
     def load_emp():
-        with open("employee.csv","r") as file:
-            reader = csv.reader(file)
-            header = next(reader)
-            for row in reader:
-                tbl_emp.insert("","end",values=row)
-
+        try:
+            with open("employee.csv","r") as file:
+                reader = csv.reader(file)
+                header = next(reader)
+                for row in reader:
+                    tbl_emp.insert("","end",values=row)
+        except:
+            with open("employee.csv","w") as file:
+                writer = csv.writer(file)
+                writer.writerow(["Employee ID","First Name","Last Name","Middle Name","Job Title","Direct Supervisor"])
 
     def int_emp():
         global record_no
-        with open("employee.csv","r") as file:
-            reader = csv.reader(file)
-            header = next(reader)
-            reader = list(reader)
-            ent_empid.insert(0,reader[record_no][0])
-            ent_fname.insert(0,reader[record_no][1])
-            ent_lname.insert(0,reader[record_no][2])
-            ent_mname.insert(0,reader[record_no][3])
-            ent_job.insert(0,reader[record_no][4])
-            ent_super.insert(0,reader[record_no][5])
+        try:
+            with open("employee.csv","r") as file:
+                reader = csv.reader(file)
+                header = next(reader)
+                reader = list(reader)
+                ent_empid.insert(0,reader[record_no][0])
+                ent_fname.insert(0,reader[record_no][1])
+                ent_lname.insert(0,reader[record_no][2])
+                ent_mname.insert(0,reader[record_no][3])
+                ent_job.insert(0,reader[record_no][4])
+                ent_super.insert(0,reader[record_no][5])
+        except:
+            with open("employee.csv","w") as file:
+                writer = csv.writer(file)
+                writer.writerow(["Employee ID","First Name","Last Name","Middle Name","Job Title","Direct Supervisor"])
 
     def next_record():
         global record_no
-        with open("employee.csv","r") as file:
-            reader = csv.reader(file)
-            header = next(reader)
-            reader = list(reader)
-            ##delete previous record
-            ent_empid.delete(0,tk.END)
-            ent_fname.delete(0,tk.END)
-            ent_lname.delete(0,tk.END)
-            ent_mname.delete(0,tk.END)
-            ent_job.delete(0,tk.END)
-            ent_super.delete(0,tk.END)
+        try:
+            with open("employee.csv","r") as file:
+                reader = csv.reader(file)
+                header = next(reader)
+                reader = list(reader)
+                ##delete previous record
+                ent_empid.delete(0,tk.END)
+                ent_fname.delete(0,tk.END)
+                ent_lname.delete(0,tk.END)
+                ent_mname.delete(0,tk.END)
+                ent_job.delete(0,tk.END)
+                ent_super.delete(0,tk.END)
 
-            ##adding previous record
-            ent_empid.insert(0,reader[record_no+1][0])
-            ent_fname.insert(0,reader[record_no+1][1])
-            ent_lname.insert(0,reader[record_no+1][2])
-            ent_mname.insert(0,reader[record_no+1][3])
-            ent_job.insert(0,reader[record_no+1][4])
-            ent_super.insert(0,reader[record_no+1][5])
-            record_no += 1
+                ##adding previous record
+                ent_empid.insert(0,reader[record_no+1][0])
+                ent_fname.insert(0,reader[record_no+1][1])
+                ent_lname.insert(0,reader[record_no+1][2])
+                ent_mname.insert(0,reader[record_no+1][3])
+                ent_job.insert(0,reader[record_no+1][4])
+                ent_super.insert(0,reader[record_no+1][5])
+                record_no += 1
 
-            if record_no >= len(reader) - 1:
-                btn_next.config(state="disabled")
-                return
-            else:
-                btn_previous.config(state="enabled")
-                
-            
-            print(f'Record No is now at {record_no}')
-            print(f'This is the {record_no + 1} record out of {len(reader)}')
-            
-
+                if record_no >= len(reader) - 1:
+                    btn_next.config(state="disabled")
+                    return
+                else:
+                    btn_previous.config(state="enabled")
+        except:
+            with open("employee.csv","w") as file:
+                writer = csv.writer(file)
+                writer.writerow(["Employee ID","First Name","Last Name","Middle Name","Job Title","Direct Supervisor"])
 
     def prev_record():
         global record_no
-        with open("employee.csv","r") as file:
-            reader = csv.reader(file)
-            header = next(reader)
-            reader = list(reader)
-            ##delete previous record
-            ent_empid.delete(0,tk.END)
-            ent_fname.delete(0,tk.END)
-            ent_lname.delete(0,tk.END)
-            ent_mname.delete(0,tk.END)
-            ent_job.delete(0,tk.END)
-            ent_super.delete(0,tk.END)
-            ## add the new details
-            ent_empid.insert(0,reader[record_no-1][0])
-            ent_fname.insert(0,reader[record_no-1][1])
-            ent_lname.insert(0,reader[record_no-1][2])
-            ent_mname.insert(0,reader[record_no-1][3])
-            ent_job.insert(0,reader[record_no-1][4])
-            ent_super.insert(0,reader[record_no-1][5])
-            record_no -= 1
+        try:
+            with open("employee.csv","r") as file:
+                reader = csv.reader(file)
+                header = next(reader)
+                reader = list(reader)
+                ##delete previous record
+                ent_empid.delete(0,tk.END)
+                ent_fname.delete(0,tk.END)
+                ent_lname.delete(0,tk.END)
+                ent_mname.delete(0,tk.END)
+                ent_job.delete(0,tk.END)
+                ent_super.delete(0,tk.END)
+                ## add the new details
+                ent_empid.insert(0,reader[record_no-1][0])
+                ent_fname.insert(0,reader[record_no-1][1])
+                ent_lname.insert(0,reader[record_no-1][2])
+                ent_mname.insert(0,reader[record_no-1][3])
+                ent_job.insert(0,reader[record_no-1][4])
+                ent_super.insert(0,reader[record_no-1][5])
+                record_no -= 1
 
-            if record_no == 0:
-                btn_previous.config(state="disabled")
-                record_no = 0
-                return
-            else:
-                btn_next.config(state="enabled")
+                if record_no == 0:
+                    btn_previous.config(state="disabled")
+                    record_no = 0
+                    return
+                else:
+                    btn_next.config(state="enabled")
+        except:
+            with open("employee.csv","w") as file:
+                writer = csv.writer(file)
+                writer.writerow(["Employee ID","First Name","Last Name","Middle Name","Job Title","Direct Supervisor"])        
+
+    def deleteEmp():
+        global record_no
+        print(record_no)
+        
+        try: 
+            with open("employee.csv", "r") as file:
+                reader = csv.reader(file)
+                header = next(reader)
+                rows = list(reader)
+                print(rows[record_no])
+            
+            ##if record_no < len(rows):
+            del rows[record_no]
                 
-            print(f'Record No is now at {record_no}')
-            print(f'This is the {record_no - 1} record out of {len(reader)}')
+            with open("employee.csv", "w",newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow(header)  # Write the header row
+                writer.writerows(rows)  # Write the updated rows
+            
+            # Reset record_no if it exceeds the new number of rows
+            if record_no >= len(rows):
+                record_no = len(rows) - 1
+        except:
+            with open("employee.csv","w") as file:
+                writer = csv.writer(file)
+                writer.writerow(["Employee ID","First Name","Last Name","Middle Name","Job Title","Direct Supervisor"])
+        tbl_emp.delete(*tbl_emp.get_children())
+        
+        ent_empid.delete(0,tk.END)
+        ent_fname.delete(0,tk.END)
+        ent_lname.delete(0,tk.END)
+        ent_mname.delete(0,tk.END)
+        ent_job.delete(0,tk.END)
+        ent_super.delete(0,tk.END)
+        int_emp()
+        load_emp()
 
     ### ------------------------------------------ MODULE: UPDATING AND DELETING RECORDS -- GUI
 
@@ -277,6 +334,9 @@ def updateEmployee():
 
     btn_next = ttk.Button(frm_viewrecord,width=50,text="Next Record",command=next_record)
     btn_next.grid(row=6,column=1,sticky="ew",pady=6,padx=10)
+                  
+    btn_delete = ttk.Button(frm_viewrecord,width=50,text="Delete Record",command=deleteEmp)
+    btn_delete.grid(row=7,column=0,sticky="ew",pady=6,padx=10)
 
     frm_viewrecord.pack(fill=tk.BOTH)
 
@@ -419,7 +479,7 @@ btn_addemp.pack(fill=tk.BOTH,pady=12)
 f_log.pack(fill=tk.BOTH,padx=12)
 
 
-
+## ----------------------------------------------------------------------- MODULE: UPDATE RECORDS
 
 
 
